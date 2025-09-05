@@ -1,4 +1,4 @@
-# Codex (OpenAI) – Installation unter Windows mit WSL (für absolute Anfänger)
+# Codex (OpenAI) – Installation unter Windows mit WSL
 
 Diese Anleitung ist **extra langsam & detailliert** geschrieben. Du musst nichts über Linux wissen. Folge den Schritten **der Reihe nach**. Am Ende startest du Codex zum ersten Mal.
 
@@ -265,11 +265,11 @@ node -v / npm -v # Versionen prüfen
 
 ---
 
-# Teil 2: Benutzung, Best‑Practices & Agents (für Anfänger)
+# Teil 2: Benutzung, Best‑Practices & Agents
 
 ## 1) Codex im Projekt starten (Schritt für Schritt)
 
-**Für absolute Anfänger – so bist du sicher im richtigen Ordner:**
+**so bist du sicher im richtigen Ordner:**
 
 1. **Im Explorer in deinen Projektordner gehen.**
 2. **Rechtsklick → „Im Terminal öffnen“** (oder „PowerShell-Fenster hier öffnen“). Das Terminal startet **genau in diesem Ordner**.
