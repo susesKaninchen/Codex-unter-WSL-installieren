@@ -262,3 +262,257 @@ cat DATEI        # Datei anzeigen
 python3 DATEI.py # Python-Skript ausführen
 node -v / npm -v # Versionen prüfen
 ```
+
+---
+
+# Teil 2: Benutzung, Best‑Practices & Agents (für Anfänger)
+
+## 1) Codex im Projekt starten (Schritt für Schritt)
+
+1. **Projektordner öffnen** (in Ubuntu/WSL):
+
+   ```bash
+   cd /pfad/zu/deinem/projekt
+   ```
+
+   *Tipp:* Falls dein Code auf **C:** liegt, kommst du so hin: `cd /mnt/c/Users/DEINNAME/…`
+2. **Codex starten**:
+
+   ```bash
+   codex
+   ```
+3. **Erstes Gespräch**:
+
+   * Zum **nur Lesen/Planen**: Tippe `/approvals` und wähle **Read Only** (Lesemodus).
+   * Bitte Codex z. B.: *„Gib mir einen Überblick über dieses Projekt. Welche Pakete werden verwendet? Welche Ordner sind wichtig?“*
+4. **Gezielt arbeiten**: Stelle immer **eine konkrete Aufgabe**:
+
+   * *„Erstelle eine Datei `README.md` mit Kurzanleitung (Install, Start, Tests).“*
+   * *„Finde alle Stellen mit `TODO:` und schlage eine Priorisierung vor.“*
+
+> **Warum Read Only zuerst?** So lernst du Code & Struktur kennen, **ohne** dass direkt etwas geändert wird. Du schaltest später gezielt mehr Rechte frei.
+
+---
+
+## 2) Approval‑Modi & Sandbox verstehen
+
+Codex hat verschiedene Freiheitsgrade ⇒ **du steuerst, wie viel automatisch passiert**:
+
+* **Suggest (Vorschlagen)**: Codex **liest** Dateien und **schlägt** Edits/Kommandos vor. **Du bestätigst**.
+* **Auto Edit (Auto‑Bearbeiten)**: Codex darf **Dateien schreiben/ändern**, fragt aber **vor Shell‑Kommandos**.
+* **Full Auto (Vollautomatik)**: Codex **liest/schreibt** und **führt Kommandos** im **aktuellen Arbeitsordner** aus.
+
+**Modus prüfen/ändern (im Chat):** `/approvals` öffnen und Modus wählen. Fürs Planen: **Read Only**. Für kleine Refactorings: **Auto Edit**. Für schnelle Prototypen: **Full Auto** (vorsichtig nutzen).
+
+> **Sicherheit:** Aktionen sind auf den **aktuellen Projektordner** begrenzt. Netzwerkzugriffe und Arbeiten außerhalb des Ordners erfordern üblicherweise **deine Bestätigung**.
+
+**Nicht‑interaktiv (Skript‑/CI‑Art):**
+
+```bash
+codex exec "fixe den fehlgeschlagenen CI‑Build"
+```
+
+---
+
+## 3) Gute Prompts = bessere Ergebnisse (Rezepte)
+
+**Allgemein:**
+
+* **Kontext geben** (Framework, Version, Ordnerpfade, Ziel).
+* **Akzeptanzkriterien** nennen (z. B. „Tests grün, Lint sauber, README aktualisiert“).
+* **Klein starten**, dann erweitern (inkrementell).
+* **Artefakte benennen** (Dateinamen, Ordner, Befehle).
+
+**Vorlagen:**
+
+* **Planen lassen**
+
+  > *„Erstelle einen **Schritt‑für‑Schritt‑Plan**, um \<Ziel> umzusetzen. Lass uns erst den Plan prüfen, bevor du Änderungen vorschlägst.“*
+
+* **Refactoring**
+
+  > *„Refaktoriere `src/utils/date.ts` für bessere Lesbarkeit. **Keine Logikänderungen**. Schlage Unit‑Tests vor.“*
+
+* **Fehler beheben**
+
+  > *„Hier ist der Fehlerlog (unten). **Diagnose zuerst**, dann Fix‑Vorschlag. Nutze bestehende Patterns. Akzeptanz: `npm test` grün.“*
+
+* **Dokumentation**
+
+  > *„Erstelle eine `README.md`‑Sektion **Getting Started** (Install, Start, Tests). Beziehe dich auf `package.json`‑Scripts.“*
+
+**Do/Don’t kurz:**
+
+* ✅ *Do:* konkrete Dateien nennen, Logs anhängen, Erwartungen klar formulieren.
+* ❌ *Don’t:* „Mach es besser“ ohne Kontext; zu große Aufgaben in einem Rutsch; geheime Schlüssel posten.
+
+---
+
+## 4) Typische Workflows (mit Beispielen)
+
+### 4.1 Feature umsetzen (sicher)
+
+1. **Branch anlegen**
+
+```bash
+git checkout -b feature/login
+```
+
+2. **Plan im Read‑Only**: `/approvals` → Read Only → *„Plane die Implementierung eines einfachen Login‑Flows…“*
+3. **Umsetzung**: `/approvals` → Auto Edit → *„Lege `src/auth/` an, implementiere …, passe Routen an.“*
+4. **Tests & Lint**: *„Führe `npm test` aus und behebe Fehler. Dann `npm run lint`.“*
+5. **Diff prüfen**
+
+```bash
+git status
+git diff --stat
+git diff
+```
+
+6. **Committen**
+
+```bash
+git add -A
+git commit -m "feat(auth): basic login flow with tests"
+```
+
+### 4.2 Bugfix aus Log reproduzieren
+
+* Im Chat: *„Hier ist der Stacktrace (unten). Reproduziere ihn lokal und schlage minimalen Fix vor.“*
+* Danach `git add -p` nutzen, um Änderungen **teilweise** zu übernehmen.
+
+### 4.3 Dokumentation generieren
+
+* *„Lies `src/` und `package.json`. Erzeuge `README.md` mit **Install/Start/Tests** und einer **Ordnerübersicht**.“*
+
+---
+
+## 5) Git – der sichere Umgang (Anfänger)
+
+**Einmalig konfigurieren** (falls noch nicht geschehen):
+
+```bash
+git config --global user.name "Dein Name"
+git config --global user.email "you@example.com"
+```
+
+**Repository initialisieren** (falls neu):
+
+```bash
+git init
+```
+
+**Status & Änderungen ansehen**
+
+```bash
+git status
+git diff [DATEI]
+```
+
+**Ausgewählt übernehmen**
+
+```bash
+git add -p   # interaktiv stagen
+```
+
+**Committen & Historie**
+
+```bash
+git commit -m "kurze, sinnvolle Nachricht"
+git log --oneline --graph --decorate -n 10
+```
+
+**Remote setzen (GitHub) & Push**
+
+```bash
+git remote add origin https://github.com/DEINNAME/DEINREPO.git
+git push -u origin HEAD
+```
+
+**Pull Request (optional, GitHub‑CLI):**
+
+```bash
+# gh vorher installieren und einloggen
+gh pr create --fill --base main --head feature/login
+```
+
+**Mit Codex zusammen:** Bitte Codex, **Commit‑Nachrichten** oder eine **PR‑Beschreibung** vorzuschlagen (du bestätigst vor dem Schreiben).
+
+---
+
+## 6) AGENTS.md – der „Spickzettel“ für Agenten
+
+**Was ist das?** Eine Datei `AGENTS.md` im **Projektwurzelordner**, die Agenten erklärt, **wie** mit deinem Projekt zu arbeiten ist (Setup, Regeln, Tests, Limits).
+
+**Minimalbeispiel (`AGENTS.md`):**
+
+```markdown
+# AGENTS.md – Projektleitfaden
+
+## Ziel & Kontext
+- Web‑App für Workshop‑Anmeldung (Node 22, React 18, Vite)
+
+## Setup & Start
+- Install: `npm ci`
+- Dev: `npm run dev`
+- Test: `npm test`
+
+## Architektur
+- `src/` React‑App, `server/` Express‑API
+
+## Code‑Regeln
+- ESLint + Prettier; keine `any`; Funktionen < 50 Zeilen
+
+## Tests
+- Vitest; neue Features brauchen mind. 1 Test
+
+## Grenzen & Sicherheit
+- **Keine** direkten Änderungen unter `infra/` ohne Rücksprache
+- Secrets über `.env.local` (niemals ins Repo)
+```
+
+**So nutzt du es:**
+
+* Lege `AGENTS.md` **im Repo** an/ab. Starte Codex im Projektordner und sag explizit:
+
+  > *„Lies die Datei `AGENTS.md` im Projekt und befolge die Regeln.“*
+* Bei Unterordnern kannst du zusätzliche `AGENTS.md` anlegen (z. B. in `server/`). Weise Codex darauf hin:
+
+  > *„Lies zusätzlich `server/AGENTS.md`. Priorisiere projektweite Regeln.“*
+
+> **Hinweis:** Je nach Codex‑Version wird `AGENTS.md` **nicht immer automatisch** geladen. Nenne die Datei daher **aktiv** im ersten Prompt (z. B. „Lies AGENTS.md…“).
+
+---
+
+## 7) Nützliche Tipps aus der Praxis
+
+* **Arbeite iterativ**: Erst **Plan**, dann kleine Schritte. Nach jedem Schritt `git status` prüfen.
+* **Explizite Grenzen**: „Arbeite **nur** in `src/` und **ändere keine** Konfigurationen.“
+* **Akzeptanztests**: „Das Ergebnis gilt als fertig, wenn `npm test` grün ist.“
+* **Diffs erklären lassen**: „Zeige mir die **Diffs** und erkläre die Änderungen kurz, bevor wir committen.“
+* **Performance & Sicherheit**: „Achte auf O(n) statt O(n^2) bei `processData`. Keine Secrets in Logs.“
+* **VS Code**: Terminal auf **Ubuntu (WSL)** stellen; `code .` öffnet den Ordner grafisch.
+
+---
+
+## 8) Häufige Probleme beim Benutzen
+
+* **„Warte auf Freigabe…“**: Öffne `/approvals` und erhöhe temporär den Modus (z. B. **Auto Edit**), oder bestätige einzelne Vorschläge manuell.
+* **Login klemmt**: `wslview`/`wslu` installieren (siehe Installationsteil) und erneut anmelden.
+* **Konfiguration**: Nutzer‑Einstellungen liegen (je nach Version) unter `~/.codex/` (z. B. `config.toml`).
+* **Zu viele Änderungen**: Bitte um **Patch in Teilschritten** oder nutze `git add -p`.
+
+---
+
+## 9) Checkliste „Sicher arbeiten“
+
+* [ ] Im **richtigen Ordner** gestartet?
+* [ ] **Read Only** zum Erkunden genutzt?
+* [ ] **AGENTS.md** vorhanden & erwähnt?
+* [ ] **Tests** definiert und ausführbar?
+* [ ] **Git‑Branch** für die Aufgabe erstellt?
+* [ ] Änderungen geprüft (**git diff**) & nur Gewolltes committet?
+
+–––
+
+**Weiter geht’s gern mit konkreten Beispielen aus deinem Projekt (Stack, Ordnerstruktur, CI). Sag Bescheid, dann passe ich Prompts & `AGENTS.md` exakt darauf an.**
