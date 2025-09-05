@@ -1,4 +1,4 @@
-# Codex (OpenAI) – Installation unter Windows mit WSL (für absolute Anfänger)
+# Codex (OpenAI) – Installation unter Windows mit WSL
 
 Diese Anleitung ist **extra langsam & detailliert** geschrieben. Du musst nichts über Linux wissen. Folge den Schritten **der Reihe nach**. Am Ende startest du Codex zum ersten Mal.
 
