@@ -1,4 +1,4 @@
-# Codex (OpenAI) – Installation unter Windows mit WSL
+# Codex (OpenAI) – Installation unter Windows mit WSL (für absolute Anfänger)
 
 Diese Anleitung ist **extra langsam & detailliert** geschrieben. Du musst nichts über Linux wissen. Folge den Schritten **der Reihe nach**. Am Ende startest du Codex zum ersten Mal.
 
@@ -269,28 +269,60 @@ node -v / npm -v # Versionen prüfen
 
 ## 1) Codex im Projekt starten (Schritt für Schritt)
 
-1. **Projektordner öffnen** (in Ubuntu/WSL):
+**Für absolute Anfänger – so bist du sicher im richtigen Ordner:**
 
-   ```bash
-   cd /pfad/zu/deinem/projekt
+1. **Im Explorer in deinen Projektordner gehen.**
+2. **Rechtsklick → „Im Terminal öffnen“** (oder „PowerShell-Fenster hier öffnen“). Das Terminal startet **genau in diesem Ordner**.
+3. **In WSL wechseln** (bleibt im selben Ordner!):
+
+   ```powershell
+   wsl -d Ubuntu
    ```
 
-   *Tipp:* Falls dein Code auf **C:** liegt, kommst du so hin: `cd /mnt/c/Users/DEINNAME/…`
-2. **Codex starten**:
+   Kontrolle in der WSL-Shell:
+
+   ```bash
+   pwd   # zeigt den Pfad in /mnt/c/Users/…/DeinProjekt
+   ls    # listet Dateien im Projekt
+   ```
+4. **Alternativ in der IDE (VS Code/JetBrains):** Integriertes **Terminal** im Projekt öffnen → ggf. zuerst `wsl -d Ubuntu` → dann weiter wie unten.
+5. **(Python-Projekte)**: vor dem Arbeiten **venv aktivieren** (siehe **1.5** unten).
+6. **Codex starten** – jetzt bist du im **richtigen Projektordner**:
 
    ```bash
    codex
    ```
-3. **Erstes Gespräch**:
 
-   * Zum **nur Lesen/Planen**: Tippe `/approvals` und wähle **Read Only** (Lesemodus).
-   * Bitte Codex z. B.: *„Gib mir einen Überblick über dieses Projekt. Welche Pakete werden verwendet? Welche Ordner sind wichtig?“*
-4. **Gezielt arbeiten**: Stelle immer **eine konkrete Aufgabe**:
+> **WICHTIGE REGEL:** Arbeite mit AI‑Agenten **nur in Projekten mit Versionsverwaltung (Git)**. So kannst du Änderungen jederzeit zurückdrehen. **Codex** kann Git gut bedienen (Branches, Diffs, Commits, PR‑Texte). Ein Start‑Prompt kann sein:
+> *„Prüfe, ob dieses Verzeichnis ein Git‑Repo ist. Falls nicht: `git init`, eine sinnvolle `.gitignore` anlegen (Python/Node/Editor), initialen Commit erstellen. Lege einen Branch `setup/codex` an.“*
 
-   * *„Erstelle eine Datei `README.md` mit Kurzanleitung (Install, Start, Tests).“*
-   * *„Finde alle Stellen mit `TODO:` und schlage eine Priorisierung vor.“*
+### 1.5) Python‑Umgebungen (venv) – **sehr empfohlen**
 
-> **Warum Read Only zuerst?** So lernst du Code & Struktur kennen, **ohne** dass direkt etwas geändert wird. Du schaltest später gezielt mehr Rechte frei.
+**Warum?** Jede App hat eigene Paketversionen. Mit `venv` bleibt dein System sauber.
+
+**Anlegen (einmal pro Projekt):**
+
+```bash
+python3 -m venv .venv
+```
+
+**Aktivieren (jedes Mal im Projekt):**
+
+```bash
+source .venv/bin/activate
+# Prompt zeigt jetzt (venv) …
+```
+
+**Pip aktualisieren & Pakete installieren:**
+
+```bash
+python -m pip install --upgrade pip
+pip install -r requirements.txt   # falls vorhanden
+```
+
+**Interpreter in VS Code wählen:** `Strg+Shift+P` → **Python: Interpreter auswählen** → deine **.venv**.
+
+> **Mit Codex:** Aktiviere **vor** `codex` dein `venv`. Wenn Codex `python …` ausführt, nutzt er automatisch deine Umgebung.
 
 ---
 
@@ -348,46 +380,61 @@ codex exec "fixe den fehlgeschlagenen CI‑Build"
 
 ---
 
-## 4) Typische Workflows (mit Beispielen)
+## 3) AGENTS.md – Dein Arbeitsvertrag mit dem Agenten (**WICHTIG**)
 
-### 4.1 Feature umsetzen (sicher)
+**Warum zuerst?** Gute Ergebnisse kommen, wenn der Agent **Regeln, Ziele und Beispiele** kennt. Schreibe das **ins Repo** – und zwar in `AGENTS.md`.
 
-1. **Branch anlegen**
+**Was hinein gehört:**
 
-```bash
-git checkout -b feature/login
+* **Ziel & Kontext** (Was ist das Projekt? Stack/Versionen?)
+* **Setup & Start** (Install‑/Start‑/Test‑Befehle)
+* **Architektur** (Ordner/Module, wo nicht eingreifen)
+* **Code‑Regeln** (Lint, Stil, Grenzen)
+* **Tests** (wie ausführen, was Pflicht ist)
+* **Grenzen & Sicherheit** (z. B. keine Änderungen unter `infra/`, keine Secrets)
+* **Prompt‑Bibliothek** (fertige, gute Prompts – **hierhin** gehören sie!)
+
+**Minimalbeispiel (`AGENTS.md`):**
+
+```markdown
+# AGENTS.md – Projektleitfaden
+
+## Ziel & Kontext
+- Web‑App für Workshop‑Anmeldung (Node 22, React 18, Vite)
+
+## Setup & Start
+- Install: `npm ci`
+- Dev: `npm run dev`
+- Test: `npm test`
+
+## Architektur
+- `src/` React‑App, `server/` Express‑API
+
+## Code‑Regeln
+- ESLint + Prettier; keine `any`; Funktionen < 50 Zeilen
+
+## Tests
+- Vitest; neue Features brauchen mind. 1 Test
+
+## Grenzen & Sicherheit
+- **Keine** direkten Änderungen unter `infra/` ohne Rücksprache
+- Secrets über `.env.local` (niemals ins Repo)
+
+## Prompt‑Bibliothek (Beispiele)
+- **Planen:** „Erstelle einen Schritt‑für‑Schritt‑Plan für <Ziel>. Erst Plan, dann Umsetzung.“
+- **Refactor:** „Refaktoriere `src/utils/date.ts` **ohne Logikänderung**. Schlage Unit‑Tests vor.“
+- **Bugfix:** „Diagnose zuerst anhand dieses Logs…, dann minimaler Fix. Akzeptanz: `npm test` grün.“
+- **Dokumentation:** „Erzeuge `README.md`‑Abschnitt *Getting Started* basierend auf `package.json`‑Scripts.“
+- **Tests schreiben:** „Erstelle Unit‑Tests für `src/lib/*.ts` mit Vitest, Abdeckung für Randfälle.“
 ```
 
-2. **Plan im Read‑Only**: `/approvals` → Read Only → *„Plane die Implementierung eines einfachen Login‑Flows…“*
-3. **Umsetzung**: `/approvals` → Auto Edit → *„Lege `src/auth/` an, implementiere …, passe Routen an.“*
-4. **Tests & Lint**: *„Führe `npm test` aus und behebe Fehler. Dann `npm run lint`.“*
-5. **Diff prüfen**
+**So lässt du Codex die Datei erstellen:**
 
-```bash
-git status
-git diff --stat
-git diff
-```
+> *„Erstelle/aktualisiere `AGENTS.md` in der Repo‑Wurzel mit den Abschnitten **Ziel & Kontext**, **Setup & Start**, **Architektur**, **Code‑Regeln**, **Tests**, **Grenzen & Sicherheit** und **Prompt‑Bibliothek**. Fülle die Prompt‑Bibliothek mit den fünf obigen Beispielen und passe Namen/Kommandos an dieses Projekt an.“*
 
-6. **Committen**
+> **Wichtig:** Nenne `AGENTS.md` im **ersten Prompt** („Lies AGENTS.md und befolge die Regeln“). Je nach Version wird sie nicht immer automatisch gelesen.
 
-```bash
-git add -A
-git commit -m "feat(auth): basic login flow with tests"
-```
-
-### 4.2 Bugfix aus Log reproduzieren
-
-* Im Chat: *„Hier ist der Stacktrace (unten). Reproduziere ihn lokal und schlage minimalen Fix vor.“*
-* Danach `git add -p` nutzen, um Änderungen **teilweise** zu übernehmen.
-
-### 4.3 Dokumentation generieren
-
-* *„Lies `src/` und `package.json`. Erzeuge `README.md` mit **Install/Start/Tests** und einer **Ordnerübersicht**.“*
-
----
-
-## 5) Git – der sichere Umgang (Anfänger)
+## Bonus: Git‑Crashkurs (kurz)
 
 **Einmalig konfigurieren** (falls noch nicht geschehen):
 
@@ -439,52 +486,46 @@ gh pr create --fill --base main --head feature/login
 **Mit Codex zusammen:** Bitte Codex, **Commit‑Nachrichten** oder eine **PR‑Beschreibung** vorzuschlagen (du bestätigst vor dem Schreiben).
 
 ---
+## 4) Typische Workflows (mit Beispielen)
 
-## 6) AGENTS.md – der „Spickzettel“ für Agenten
+### 4.1 Feature umsetzen (sicher)
 
-**Was ist das?** Eine Datei `AGENTS.md` im **Projektwurzelordner**, die Agenten erklärt, **wie** mit deinem Projekt zu arbeiten ist (Setup, Regeln, Tests, Limits).
+1. **Branch anlegen**
 
-**Minimalbeispiel (`AGENTS.md`):**
-
-```markdown
-# AGENTS.md – Projektleitfaden
-
-## Ziel & Kontext
-- Web‑App für Workshop‑Anmeldung (Node 22, React 18, Vite)
-
-## Setup & Start
-- Install: `npm ci`
-- Dev: `npm run dev`
-- Test: `npm test`
-
-## Architektur
-- `src/` React‑App, `server/` Express‑API
-
-## Code‑Regeln
-- ESLint + Prettier; keine `any`; Funktionen < 50 Zeilen
-
-## Tests
-- Vitest; neue Features brauchen mind. 1 Test
-
-## Grenzen & Sicherheit
-- **Keine** direkten Änderungen unter `infra/` ohne Rücksprache
-- Secrets über `.env.local` (niemals ins Repo)
+```bash
+git checkout -b feature/login
 ```
 
-**So nutzt du es:**
+2. **Plan im Read‑Only**: `/approvals` → Read Only → *„Plane die Implementierung eines einfachen Login‑Flows…“*
+3. **Umsetzung**: `/approvals` → Auto Edit → *„Lege `src/auth/` an, implementiere …, passe Routen an.“*
+4. **Tests & Lint**: *„Führe `npm test` aus und behebe Fehler. Dann `npm run lint`.“*
+5. **Diff prüfen**
 
-* Lege `AGENTS.md` **im Repo** an/ab. Starte Codex im Projektordner und sag explizit:
+```bash
+git status
+git diff --stat
+git diff
+```
 
-  > *„Lies die Datei `AGENTS.md` im Projekt und befolge die Regeln.“*
-* Bei Unterordnern kannst du zusätzliche `AGENTS.md` anlegen (z. B. in `server/`). Weise Codex darauf hin:
+6. **Committen**
 
-  > *„Lies zusätzlich `server/AGENTS.md`. Priorisiere projektweite Regeln.“*
+```bash
+git add -A
+git commit -m "feat(auth): basic login flow with tests"
+```
 
-> **Hinweis:** Je nach Codex‑Version wird `AGENTS.md` **nicht immer automatisch** geladen. Nenne die Datei daher **aktiv** im ersten Prompt (z. B. „Lies AGENTS.md…“).
+### 4.2 Bugfix aus Log reproduzieren
+
+* Im Chat: *„Hier ist der Stacktrace (unten). Reproduziere ihn lokal und schlage minimalen Fix vor.“*
+* Danach `git add -p` nutzen, um Änderungen **teilweise** zu übernehmen.
+
+### 4.3 Dokumentation generieren
+
+* *„Lies `src/` und `package.json`. Erzeuge `README.md` mit **Install/Start/Tests** und einer **Ordnerübersicht**.“*
 
 ---
 
-## 7) Nützliche Tipps aus der Praxis
+## 5) Nützliche Tipps aus der Praxis
 
 * **Arbeite iterativ**: Erst **Plan**, dann kleine Schritte. Nach jedem Schritt `git status` prüfen.
 * **Explizite Grenzen**: „Arbeite **nur** in `src/` und **ändere keine** Konfigurationen.“
@@ -495,7 +536,7 @@ gh pr create --fill --base main --head feature/login
 
 ---
 
-## 8) Häufige Probleme beim Benutzen
+## 6) Häufige Probleme beim Benutzen
 
 * **„Warte auf Freigabe…“**: Öffne `/approvals` und erhöhe temporär den Modus (z. B. **Auto Edit**), oder bestätige einzelne Vorschläge manuell.
 * **Login klemmt**: `wslview`/`wslu` installieren (siehe Installationsteil) und erneut anmelden.
@@ -504,7 +545,7 @@ gh pr create --fill --base main --head feature/login
 
 ---
 
-## 9) Checkliste „Sicher arbeiten“
+## 7) Checkliste „Sicher arbeiten“
 
 * [ ] Im **richtigen Ordner** gestartet?
 * [ ] **Read Only** zum Erkunden genutzt?
