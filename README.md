@@ -33,6 +33,8 @@ In dem **blauen** (Admin‑)Fenster tippst/fügt du ein und drückst **Enter**:
 ```powershell
 wsl --install -d Ubuntu
 ```
+If this dont work:
+Set-ExecutionPolicy Unrestricted
 
 * Das aktiviert WSL und lädt **Ubuntu** herunter.
 * **Wenn eine Neustart‑Aufforderung kommt**: bitte **neu starten**.
