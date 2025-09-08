@@ -34,6 +34,7 @@ In dem **blauen** (Admin‑)Fenster tippst/fügt du ein und drückst **Enter**:
 wsl --install -d Ubuntu
 ```
 If this dont work:
+bcdedit /set hypervisorlaunchtype Auto
 Set-ExecutionPolicy Unrestricted
 
 * Das aktiviert WSL und lädt **Ubuntu** herunter.
